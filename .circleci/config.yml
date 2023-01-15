@@ -1,68 +1,56 @@
 version: 2.1
 orbs:
-  # orgs contain basc recipes and reproducible actions (install node, aws, etc.)
-  node: circleci/node@5.0.2
+  node: circleci/node@4.1.0
+  aws-cli: circleci/aws-cli@1.3.1
   eb: circleci/aws-elastic-beanstalk@2.0.1
-  aws-cli: circleci/aws-cli@3.1.1
-  # different jobs are calles later in the workflows sections
+# define a job to be invoked later in a workflow.
 jobs:
   build:
     docker:
-      # the base image can run most needed actions with orbs
-      - image: "cimg/node:14.15"
+      - image: "cimg/base:stable"
     steps:
-      # install node and checkout code
       - node/install:
-          node-version: "14.15"
+          node-version: "14.15.1"
       - checkout
-      # Use root level package.json to install dependencies in the frontend app
+      # setup aws cli
+      - aws-cli/setup
+      # setup eb cli
+      - eb/setup
+        # install frontend dependencies
       - run:
-          name: Install Front-End Dependencies
-          command: npm run frontend:instal
-      - run:
-          name: Install API Dependencies
-          command: npm run api:install
-      - run:
-          name: Front-End Lint
+          name: Front-End Install
           command: |
-            echo "TODO: Lint the frontend"
-      # TODO: Build the frontend app
+            npm run frontend:install
+        # install backend dependencies
+      - run:
+          name: Back-End Install
+          command: |
+            npm run api:install
+        # build frontend
       - run:
           name: Front-End Build
-          command: npm run frontend:build
+          command: |
+            npm run frontend:build
+        # build backend
       - run:
-          name: API Build
-          command: npm run api:build
-  # deploy step will run only after manual approval
-  deploy:
-    docker:
-      - image: "cimg/base:stable"
-      # more setup needed for aws, node, elastic beanstalk
-    steps:
-      - node/install:
-          node-version: "14.15"
-      - eb/setup
-      - aws-cli/setup
-      - checkout
+          name: Back-End Build
+          command: |
+            npm run api:build
+        # deploy frontend
       - run:
-          name: Deploy Front
-          command: npm run frontend:deploy
+          name: Deploy UI
+          command: |
+            npm run frontend:deploy
+        # deploy backend
       - run:
-          name: Deploy App
-          command: npm run api:deploy
-
+          name: Deploy Server
+          command: |
+            npm run api:deploy
+# start the workflows
 workflows:
-  udagram:
+  build-deploy:
     jobs:
-      - build
-      - hold:
+      - build:
           filters:
             branches:
-              only:
-                - master
-          type: approval
-          requires:
-            - build
-      - deploy:
-          requires:
-            - hold
+              only: master
