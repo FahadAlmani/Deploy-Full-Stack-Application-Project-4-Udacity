@@ -24,4 +24,4 @@ S3 (Simple Storage Service) is an object storage service that offers industry-le
 
 - The tool used: Angular
 
-- S3 (Simple Storage Service) URL: http://udagram-63276783.s3-website-us-east-1.amazonaws.com/
+- S3 (Simple Storage Service) URL: http://udagram-6327678.s3-website-us-east-1.amazonaws.com/
