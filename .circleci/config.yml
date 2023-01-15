@@ -20,32 +20,32 @@ jobs:
       - run:
           name: Front-End Install
           command: |
-            npm run front-end:install
+            npm run frontend:install
         # install backend dependencies
       - run:
           name: Back-End Install
           command: |
-            npm run back-end:install
+            npm run api:install
         # build frontend
       - run:
           name: Front-End Build
           command: |
-            npm run front-end:build
+            npm run frontend:build
         # build backend
       - run:
           name: Back-End Build
           command: |
-            npm run back-end:build
+            npm run api:build
         # deploy frontend
       - run:
           name: Deploy UI
           command: |
-            npm run front-end:deploy
+            npm run frontend:deploy
         # deploy backend
       - run:
           name: Deploy Server
           command: |
-            npm run back-end:deploy
+            npm run api:deploy
 # start the workflows
 workflows:
   build-deploy:
